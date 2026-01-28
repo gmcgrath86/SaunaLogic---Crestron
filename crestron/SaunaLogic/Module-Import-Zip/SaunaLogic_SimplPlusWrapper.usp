@@ -1,0 +1,223 @@
+/*******************************************************************************************
+  SIMPL+ Module Information
+*******************************************************************************************/
+/*
+Dealer Name:
+System Name:
+System Number:
+Programmer:
+Comments: SaunaLogic / TyloHelo SL-2 LAN control (Tuya/Thing tcp/6668)
+*/
+
+/*******************************************************************************************
+  Compiler Directives
+*******************************************************************************************/
+#SYMBOL_NAME "SaunaLogic LAN"
+#HINT "Poll + control SaunaLogic over LAN"
+#DEFAULT_VOLATILE
+
+/*******************************************************************************************
+  Include Libraries
+*******************************************************************************************/
+#USER_SIMPLSHARP_LIBRARY "SaunaLogic 1.0"
+
+/*******************************************************************************************
+  DIGITAL, ANALOG and SERIAL INPUTS and OUTPUTS
+*******************************************************************************************/
+/* Reserve space for parameter fields (common 3rd-party module layout) */
+DIGITAL_INPUT _SKIP_;
+DIGITAL_INPUT _SKIP_;
+DIGITAL_INPUT _SKIP_;
+DIGITAL_INPUT _SKIP_;
+
+DIGITAL_INPUT POLL_ENABLE;
+DIGITAL_INPUT POLL_NOW;
+
+DIGITAL_INPUT HEATER_ON;
+DIGITAL_INPUT HEATER_OFF;
+
+ANALOG_INPUT SETPOINT;
+DIGITAL_INPUT SETPOINT_SEND;
+
+/*******************************************************************************************
+  Outputs
+*******************************************************************************************/
+/* Reserve space for parameter fields (common 3rd-party module layout) */
+DIGITAL_OUTPUT _SKIP_;
+DIGITAL_OUTPUT _SKIP_;
+DIGITAL_OUTPUT _SKIP_;
+DIGITAL_OUTPUT _SKIP_;
+
+DIGITAL_OUTPUT ONLINE_FB;
+DIGITAL_OUTPUT HEATER_ON_FB;
+
+ANALOG_OUTPUT CURRENT_TEMP;
+ANALOG_OUTPUT SETPOINT_FB;
+
+STRING_OUTPUT UNIT$;
+STRING_OUTPUT LAST_ERROR$;
+STRING_OUTPUT LAST_SNAPSHOT_JSON$;
+
+/*******************************************************************************************
+  Parameters
+*******************************************************************************************/
+STRING_PARAMETER Host[64];
+STRING_PARAMETER LocalKey[32];
+STRING_PARAMETER DevId[64];
+STRING_PARAMETER Uid[64];
+
+/*******************************************************************************************
+  Global Variables
+*******************************************************************************************/
+SaunaLogicSimplPlusFacade sauna;
+INTEGER isConfigured;
+INTEGER commandBusy;
+
+/*******************************************************************************************
+  Functions
+*******************************************************************************************/
+FUNCTION ApplyConfig()
+{
+    INTEGER ok;
+    if (Len(Host) = 0) { LAST_ERROR$ = "Host parameter empty"; ONLINE_FB = 0; isConfigured = 0; return; }
+    if (Len(LocalKey) = 0) { LAST_ERROR$ = "LocalKey parameter empty"; ONLINE_FB = 0; isConfigured = 0; return; }
+    if (Len(DevId) = 0) { LAST_ERROR$ = "DevId parameter empty"; ONLINE_FB = 0; isConfigured = 0; return; }
+
+    ok = sauna.Configure(Host, LocalKey, DevId, Uid);
+    if (ok = 0)
+    {
+        isConfigured = 0;
+        LAST_ERROR$ = sauna.GetLastError();
+        ONLINE_FB = sauna.GetOnlineFb();
+        return;
+    }
+
+    isConfigured = 1;
+    LAST_ERROR$ = sauna.GetLastError();
+    ONLINE_FB = sauna.GetOnlineFb();
+}
+
+FUNCTION PollOnce()
+{
+    INTEGER ok;
+    if (commandBusy = 1) { return; }
+    if (POLL_ENABLE = 0) { return; }
+    if (isConfigured = 0) { ApplyConfig(); }
+    if (isConfigured = 0) { return; }
+
+    ok = sauna.PollSnapshot();
+    ONLINE_FB = sauna.GetOnlineFb();
+    LAST_ERROR$ = sauna.GetLastError();
+
+    if (ok)
+    {
+        HEATER_ON_FB = sauna.GetHeaterOnFb();
+        CURRENT_TEMP = sauna.GetTemp();
+        SETPOINT_FB = sauna.GetSetpoint();
+        UNIT$ = sauna.GetUnit();
+        LAST_SNAPSHOT_JSON$ = sauna.GetLastSnapshotJson();
+    }
+}
+
+FUNCTION PollOnceForce()
+{
+    INTEGER ok;
+    if (isConfigured = 0) { ApplyConfig(); }
+    if (isConfigured = 0) { return; }
+
+    ok = sauna.PollSnapshot();
+    ONLINE_FB = sauna.GetOnlineFb();
+    LAST_ERROR$ = sauna.GetLastError();
+
+    if (ok)
+    {
+        HEATER_ON_FB = sauna.GetHeaterOnFb();
+        CURRENT_TEMP = sauna.GetTemp();
+        SETPOINT_FB = sauna.GetSetpoint();
+        UNIT$ = sauna.GetUnit();
+        LAST_SNAPSHOT_JSON$ = sauna.GetLastSnapshotJson();
+    }
+}
+
+/*******************************************************************************************
+  Event Handlers
+*******************************************************************************************/
+PUSH POLL_NOW
+{
+    PollOnce();
+}
+
+PUSH HEATER_ON
+{
+    if (isConfigured = 0) { ApplyConfig(); }
+    if (isConfigured)
+    {
+        commandBusy = 1;
+        LAST_ERROR$ = "";
+        sauna.HeaterOn();
+    }
+    /* Device often applies writes ~0.5-1.0s later; verify after a short delay. */
+    WAIT (15)
+    {
+        PollOnceForce();
+        if (ONLINE_FB = 1)
+        {
+            if (HEATER_ON_FB = 0) { LAST_ERROR$ = "HeaterOn sent but state did not change."; }
+            else { LAST_ERROR$ = ""; }
+        }
+        commandBusy = 0;
+    }
+}
+
+PUSH HEATER_OFF
+{
+    if (isConfigured = 0) { ApplyConfig(); }
+    if (isConfigured)
+    {
+        commandBusy = 1;
+        LAST_ERROR$ = "";
+        sauna.HeaterOff();
+    }
+    /* Device often applies writes ~0.5-1.0s later; verify after a short delay. */
+    WAIT (15)
+    {
+        PollOnceForce();
+        if (ONLINE_FB = 1)
+        {
+            if (HEATER_ON_FB = 1) { LAST_ERROR$ = "HeaterOff sent but state did not change."; }
+            else { LAST_ERROR$ = ""; }
+        }
+        commandBusy = 0;
+    }
+}
+
+PUSH SETPOINT_SEND
+{
+    if (isConfigured = 0) { ApplyConfig(); }
+    if (isConfigured)
+    {
+        commandBusy = 1;
+        LAST_ERROR$ = "";
+        sauna.SetSetpoint(SETPOINT);
+    }
+    WAIT (15) { PollOnceForce(); commandBusy = 0; }
+}
+
+/*******************************************************************************************
+  Main()
+*******************************************************************************************/
+Function Main()
+{
+    WaitForInitializationComplete();
+
+    isConfigured = 0;
+    commandBusy = 0;
+    ONLINE_FB = 0;
+    HEATER_ON_FB = 0;
+    CURRENT_TEMP = 0;
+    SETPOINT_FB = 0;
+    UNIT$ = "";
+    LAST_ERROR$ = "";
+    LAST_SNAPSHOT_JSON$ = "";
+}
+

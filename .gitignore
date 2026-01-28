@@ -1,0 +1,11 @@
+.DS_Store
+.venvs/
+.sauna_appdata/
+.sauna_jadx/
+
+crestron/ABNB-23218/
+crestron/GeistRpdu/
+crestron_helper_script/
+
+saunalogic_extract/thingmmkv/
+SaunaLogic.apk

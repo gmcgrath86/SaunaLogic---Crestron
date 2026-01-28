@@ -1,0 +1,7 @@
+[+] Hooked com.thingclips.smart.interior.hardware.ThingLocalNormalControlBean.i
+[+] Hooked com.thingclips.smart.sdk.bean.DeviceBean.getLocalKey
+[+] Hooked com.thingclips.smart.android.device.ThingNetworkApi.parseAesData
+[+] Hooked com.alibaba.fastjson.JSONObject.getString
+[+] Hooked org.json.JSONObject.getString
+[+] Hooked okhttp3.ResponseBody.string
+[+] Hooked okhttp3.ResponseBody.bytes

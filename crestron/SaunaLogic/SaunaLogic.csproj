@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- Match the Geist module approach: keep it simple and SDK-agnostic -->
+    <TargetFramework>net35</TargetFramework>
+    <LangVersion>7.3</LangVersion>
+    <AssemblyName>SaunaLogic</AssemblyName>
+    <RootNamespace>SunValleyHQ.Sauna</RootNamespace>
+    <DefineConstants>CRESTRON</DefineConstants>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="src\\SaunaCrc32.cs" />
+    <Compile Include="src\\SaunaAes128EcbPkcs7.cs" />
+    <Compile Include="src\\SaunaCrypto.cs" />
+    <Compile Include="src\\SaunaJson.cs" />
+    <Compile Include="src\\SaunaTuyaFrame.cs" />
+    <Compile Include="src\\SaunaLogicClient.cs" />
+    <Compile Include="src\\SaunaLogicSimplPlusFacade.cs" />
+  </ItemGroup>
+</Project>
+
