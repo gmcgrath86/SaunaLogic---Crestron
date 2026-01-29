@@ -9,7 +9,7 @@ Key idea (from docs/saunalogic-pcap-notes.md):
 No Android/emulator required at runtime.
 
 Usage:
-  python3 saunalogic_extract/sauna_live_poll.py --host 192.168.1.60 --key "HSt;vM1?ZKRvG9u'"
+  python3 saunalogic_extract/sauna_live_poll.py --host <DEVICE_IP> --key "<LOCAL_KEY>"
 """
 
 from __future__ import annotations
@@ -103,7 +103,7 @@ def dps_get(dps: dict[str, Any], key: str) -> Any:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--host", default="192.168.1.60")
+    ap.add_argument("--host", default="192.168.1.100")
     ap.add_argument("--port", type=int, default=6668)
     ap.add_argument("--key", required=True, help="Tuya/Thing localKey (ASCII; typically 16 chars)")
     ap.add_argument("--timeout", type=float, default=2.0)

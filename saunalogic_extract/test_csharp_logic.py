@@ -340,7 +340,7 @@ def main():
     import argparse
     
     parser = argparse.ArgumentParser(description="Test C# logic against real device")
-    parser.add_argument("--host", default="192.168.1.60")
+    parser.add_argument("--host", default="192.168.1.100")
     parser.add_argument("--key", required=True)
     parser.add_argument("--devid", required=True)
     parser.add_argument("--uid", default="")

@@ -92,7 +92,7 @@ def build_dps_write_json(dev_id: str, uid: str | None, dps_key: str, value: str)
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--host", default="192.168.1.60")
+    ap.add_argument("--host", default="192.168.1.100")
     ap.add_argument("--port", type=int, default=6668)
     ap.add_argument("--key", required=True)
     ap.add_argument("--devid", required=True)

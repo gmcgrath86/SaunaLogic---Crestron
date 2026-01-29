@@ -12,7 +12,7 @@ Dependencies:
 - `openssl` available on PATH
 
 Usage:
-  python3 saunalogic_extract/tuya_try_decrypt.py --key "HSt;vM1?ZKRvG9u'" --hex "<packethex>"
+  python3 saunalogic_extract/tuya_try_decrypt.py --key "<LOCAL_KEY>" --hex "<packethex>"
 """
 
 from __future__ import annotations

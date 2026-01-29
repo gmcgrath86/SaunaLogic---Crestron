@@ -5,7 +5,7 @@ Quick stability test for SaunaLogic LAN polling.
 Runs N polls back-to-back using the Type-10 DP snapshot query and reports success rate and timings.
 
 Usage:
-  python3 saunalogic_extract/sauna_poll_stability_test.py --host 192.168.1.60 --key "HSt;vM1?ZKRvG9u'" --count 50
+  python3 saunalogic_extract/sauna_poll_stability_test.py --host <DEVICE_IP> --key "<LOCAL_KEY>" --count 50
 """
 
 from __future__ import annotations
@@ -17,7 +17,7 @@ import time
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--host", default="192.168.1.60")
+    ap.add_argument("--host", default="192.168.1.100")
     ap.add_argument("--key", required=True)
     ap.add_argument("--count", type=int, default=20)
     args = ap.parse_args()

@@ -25,10 +25,10 @@ Copy/import the ZIP into:
 Then restart SIMPL Windows if the symbol doesn’t appear.
 
 ## Required parameter values (typical)
-- `Host`: `192.168.1.60`
-- `LocalKey`: `HSt;vM1?ZKRvG9u'` (16 chars)
-- `DevId`: `27703180e868e7eda84a`
-- `Uid`: `az1721268754042F6CBR` (optional, but recommended for writes)
+- `Host`: `<DEVICE_IP>`
+- `LocalKey`: `<LOCAL_KEY>` (16 chars)
+- `DevId`: `<DEV_ID>`
+- `Uid`: `<UID>` (optional, but recommended for writes)
 
 ## Minimal SIMPL test
 Wire:
@@ -38,4 +38,5 @@ Wire:
   - Expect `HEATER_ON_FB` follows.
 
 If it fails, check `LAST_ERROR$` and clear SIMPL caches (see `docs/crestron-module-development-playbook.md`).
+See the root `README.md` for steps on extracting `LocalKey`, `DevId`, and `Uid`.
 

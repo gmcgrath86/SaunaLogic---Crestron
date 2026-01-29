@@ -58,7 +58,7 @@ Key principles:
 Run the Python port against the actual hardware to verify the C# logic works:
 
 ```bash
-python3 test_csharp_logic.py --host 192.168.1.60 --key "..." --devid "..." --on
+python3 test_csharp_logic.py --host <DEVICE_IP> --key "<LOCAL_KEY>" --devid "<DEV_ID>" --on
 ```
 
 If the Python port works, the C# code will work (assuming the port is accurate).
@@ -184,10 +184,10 @@ Run tests:
 ```bash
 # Test heater ON using exact C# logic
 python3 saunalogic_extract/test_csharp_logic.py \
-  --host 192.168.1.60 \
-  --key "HSt;vM1?ZKRvG9u'" \
-  --devid "27703180e868e7eda84a" \
-  --uid "az1721268754042F6CBR" \
+  --host <DEVICE_IP> \
+  --key "<LOCAL_KEY>" \
+  --devid "<DEV_ID>" \
+  --uid "<UID>" \
   --on
 
 # Diagnose CRC32 differences

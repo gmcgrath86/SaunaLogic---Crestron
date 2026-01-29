@@ -15,7 +15,7 @@ Java.perform(function () {
         log('[fetch] devListCacheManager null');
         return;
       }
-      var devId = '27703180e868e7eda84a';
+      var devId = '<DEV_ID>'; // set to your device id from the app
       var dev = devList.getDev(devId);
       if (!dev) {
         log('[fetch] device not found for devId=' + devId);

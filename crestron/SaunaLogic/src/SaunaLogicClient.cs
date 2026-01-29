@@ -223,7 +223,7 @@ namespace SunValleyHQ.Sauna
             var prefix = new byte[Type7Prefix15.Length];
             Buffer.BlockCopy(Type7Prefix15, 0, prefix, 0, prefix.Length);
             // prefix bytes (from pcap): "3.3" + 6x00 + 000003 + <requestId u32>
-            // We overwrite the 4 bytes starting at index 12 with a counter/requestId.
+            // We overwrite the 4 bytes starting at index 11 with a counter/requestId.
             var counter = unchecked((uint)Environment.TickCount);
             SaunaTuyaFrame.WriteU32BE(prefix, 11, counter);
 

@@ -24,10 +24,11 @@ Then copy/import into:
 `C:\\Users\\Public\\Documents\\Crestron\\SIMPL\\Usrsplus\\`
 
 ## Parameters you will need
-- `Host$`: sauna controller IP (default `192.168.1.60`)
+- `Host$`: sauna controller IP (example: `<DEVICE_IP>`)
 - `LocalKey$`: 16-byte Tuya/Thing localKey (ASCII)
 - `DevId$`: device id string (from DP snapshot `devId`)
-- `Uid$`: uid string used by the app in DPS writes (optional; can be left empty if your device accepts uid-less writes)
+- `Uid$`: uid string used by the app in DPS writes (optional but recommended)
 
+See the root `README.md` for steps on extracting `LocalKey`, `DevId`, and `Uid`.
 See `docs/saunalogic-pcap-notes.md` for protocol details and DPS mapping.
 

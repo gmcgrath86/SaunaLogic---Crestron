@@ -356,8 +356,8 @@ We extracted the Tuya/Thing **`localKey`** directly from the running SaunaLogic 
      - `frida -U -p "$PID" -l saunalogic_extract/frida_localkey.js -q -t 180`
 
 ### Extracted values
-- **localKey**: `HSt;vM1?ZKRvG9u'` (16 bytes)
-- **uid**: `az1721268754042F6CBR`
+- **localKey**: `<LOCAL_KEY>` (16 bytes)
+- **uid**: `<UID>`
 
 ### Proof: decrypted Type-8 telemetry → JSON
 With the key above, we can decrypt Type‑8 packets (cmd=8, len=107 frames) using AES-128-ECB and recover JSON.
@@ -366,12 +366,12 @@ Example (from `PCAPdroid_15_Jan_22_43_37.pcap`, first telemetry frame):
 - Packet hex:
   - `000055aa00000000000000080000005b00000000332e33000000000000ddac00000001462ebb16e2667b75b5c3eefed6886d5610fffe31bb2a4954da937633eb4da222089baf36ecb86c059f0165d3e244f7ad9f7ae1542b07bff423a6fb5ee587c653b5a25f3f0000aa55`
 - Decrypt helper:
-  - `python3 saunalogic_extract/tuya_try_decrypt.py --key "HSt;vM1?ZKRvG9u'" --hex "<packethex>"`
+  - `python3 saunalogic_extract/tuya_try_decrypt.py --key "<LOCAL_KEY>" --hex "<packethex>"`
 - Output JSON:
-  - `{"devId":"27703180e868e7eda84a","dps":{"3":156},"t":1768545835}`
+  - `{"devId":"<DEV_ID>","dps":{"3":156},"t":1768545835}`
 
 Notes:
-- `devId` contains the device MAC (`e868e7eda84a` → `e8:68:e7:ed:a8:4a`, matches `docs/ip-table.md` sauna controller MAC).
+- `devId` may contain the device MAC (example: `e868e7eda84a` → `e8:68:e7:ed:a8:4a`).
 - `dps["3"]` appears to be the **current temp** (e.g., `156` during warm-up capture).
 
 ---
@@ -404,7 +404,7 @@ Also from `PCAPdroid_15_Jan_21_33_01.pcap`:
 Decryption result (JSON DPS snapshot):
 
 ```
-{"devId":"27703180e868e7eda84a","dps":{"1":false,"2":194,"3":73,"4":"ONLY_TRAD","9":"1","10":0,"11":0,"101":"0","103":false,"105":"1","106":0,"107":"F"}}
+{"devId":"<DEV_ID>","dps":{"1":false,"2":194,"3":73,"4":"ONLY_TRAD","9":"1","10":0,"11":0,"101":"0","103":false,"105":"1","106":0,"107":"F"}}
 ```
 
 ### DPS field mapping (confirmed)
@@ -414,7 +414,7 @@ Decryption result (JSON DPS snapshot):
 - **`dps["107"]`**: temperature unit (`"F"` observed)
 
 ### Live polling proof (direct-to-device)
-We validated end-to-end polling on the LAN (no emulator) by connecting to `192.168.1.60:6668`, sending the Type‑10 query, decrypting the response, and parsing DPS.
+We validated end-to-end polling on the LAN (no emulator) by connecting to `<DEVICE_IP>:6668`, sending the Type‑10 query, decrypting the response, and parsing DPS.
 
 Reference script:
 - `saunalogic_extract/sauna_live_poll.py`
@@ -422,7 +422,7 @@ Reference script:
 Example output:
 
 ```
-devId: 27703180e868e7eda84a
+devId: <DEV_ID>
 heater_on(dps1): True
 setpoint(dps2): 190
 temp(dps3): 188

@@ -14,11 +14,25 @@ This repo contains a working Crestron SIMPL# module for controlling a **SaunaLog
 - `SaunaLogic 1.0.clz` — compiled SIMPL# library artifact.
 - `.frida/sauna_key.js` and logs — Frida scripts used to extract `localKey` and `uid`.
 
-## Device parameters (example from our device)
-- `Host`: `192.168.1.60`
-- `LocalKey`: `HSt;vM1?ZKRvG9u'` (16 bytes)
-- `DevId`: `27703180e868e7eda84a`
-- `Uid`: `az1721268754042F6CBR`
+## Device parameters (you will supply these)
+- `Host`: `<DEVICE_IP>`
+- `LocalKey`: `<LOCAL_KEY>` (16 ASCII bytes)
+- `DevId`: `<DEV_ID>`
+- `Uid`: `<UID>` (optional but recommended)
+
+## How to obtain LocalKey / DevId / Uid
+Use the Frida script and helper tools in `saunalogic_extract/`:
+
+1) **Get LocalKey + Uid from the app**
+   - Run `saunalogic_extract/frida_localkey.js` against the SaunaLogic Android app.
+   - It hooks `ThingNetworkApi.parseAesData` and prints the `localKey` (and often `uid`).
+
+2) **Get DevId**
+   - DevId appears inside the decrypted DP snapshot JSON.
+   - Use `saunalogic_extract/tuya_try_decrypt.py` with your LocalKey on any captured packet to reveal the `devId` field.
+
+3) **Confirm on LAN**
+   - Use `saunalogic_extract/sauna_live_poll.py` to poll and print the decrypted snapshot, which includes `devId`.
 
 ## Protocol summary (Tuya/Thing LAN style)
 Full details are in `docs/saunalogic-pcap-notes.md`. Highlights:
@@ -132,6 +146,14 @@ Both fixes were verified against the real device:
 
 ---
 
-## Building
-After applying fixes, rebuild the SIMPL# library (`.clz`) and redeploy to your Crestron processor.
+## Quick start (build + deploy)
+1) Build `crestron/SaunaLogic/SaunaLogic.csproj` to generate a new `.clz` and `.config`.
+2) Copy the updated `.clz` + `.config` into your SIMPL Windows Usrsplus module (or re‑import the ZIP).
+3) Recompile your SIMPL program and upload to the processor.
+4) Set the four module parameters (`Host`, `LocalKey`, `DevId`, `Uid`) and test `POLL_NOW`, `HEATER_ON`, `HEATER_OFF`.
+
+## Troubleshooting
+- **No polling**: verify Host/IP, port `6668`, and LocalKey correctness.
+- **Polling ok, commands fail**: confirm CRC32 fix is present and Type‑7 offset is `11`.
+- **Commands still fail**: verify `Uid` is provided and your device accepts DPS writes.
 
