@@ -28,13 +28,13 @@ namespace SunValleyHQ.Sauna
             if (data == null) throw new ArgumentNullException("data");
             if (offset < 0 || count < 0 || offset + count > data.Length) throw new ArgumentOutOfRangeException();
 
-            uint crc = 0x00000000u;
+            uint crc = 0xFFFFFFFFu;  // Standard IEEE CRC32 initial value
             for (int i = 0; i < count; i++)
             {
                 var b = data[offset + i];
                 crc = Table[(crc ^ b) & 0xFFu] ^ (crc >> 8);
             }
-            return crc;
+            return crc ^ 0xFFFFFFFFu;  // Standard IEEE CRC32 final XOR
         }
     }
 }

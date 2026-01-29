@@ -225,7 +225,7 @@ namespace SunValleyHQ.Sauna
             // prefix bytes (from pcap): "3.3" + 6x00 + 000003 + <requestId u32>
             // We overwrite the 4 bytes starting at index 12 with a counter/requestId.
             var counter = unchecked((uint)Environment.TickCount);
-            SaunaTuyaFrame.WriteU32BE(prefix, 12, counter);
+            SaunaTuyaFrame.WriteU32BE(prefix, 11, counter);
 
             // Build and send the command frame. Empirically the device is more reliable if we:
             //  - connect
