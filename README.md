@@ -21,7 +21,8 @@ This repo contains a working Crestron SIMPL# module for controlling a **SaunaLog
 - `Uid`: `<UID>` (optional but recommended)
 
 ## How to obtain LocalKey / DevId / Uid
-Use the Frida script and helper tools in `saunalogic_extract/`:
+See `docs/getting-keys.md` for a step-by-step Frida walkthrough.
+Summary:
 
 1) **Get LocalKey + Uid from the app**
    - Run `saunalogic_extract/frida_localkey.js` against the SaunaLogic Android app.
